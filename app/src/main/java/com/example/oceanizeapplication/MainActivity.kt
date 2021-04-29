@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -19,8 +20,6 @@ import com.example.oceanizeapplication.model.DataModelResponse
 import com.example.oceanizeapplication.view_model.DataViewModel
 import com.jcraft.jsch.*
 import java.io.ByteArrayOutputStream
-import java.io.DataInputStream
-import java.io.DataOutputStream
 import java.util.*
 
 
@@ -46,50 +45,12 @@ class MainActivity : AppCompatActivity() {
         recyclerView!!.setLayoutManager(mLayoutManager)
         recyclerView!!.setItemAnimator(DefaultItemAnimator())
         btnNext=findViewById(R.id.btnNext)
-        btnNext.setOnClickListener {
-            object : AsyncTask<Int?, Void?, Void?>() {
 
-                override fun doInBackground(vararg params: Int?): Void? {
-                    try {
-                       executeSSHcommand()
-
-                    } catch (e: java.lang.Exception) {
-                        e.printStackTrace()
-                    }
-                    return null
-                }
-            }.execute(1)
-
-        }
 
 
     }
 
-    fun executeSSHcommand() {
 
-        val jsch = JSch()
-        val session = jsch.getSession("android", "174.138.23.141", 2024)
-        session.setPassword("android123")
-
-        val prop = Properties()
-        prop["StrictHostKeyChecking"] = "no"
-        session.setConfig(prop)
-
-        session.connect()
-
-        val channel = session.openChannel("exec") as ChannelExec
-        val baos = ByteArrayOutputStream()
-        channel.outputStream = baos
-        channel.setCommand("perl -v")
-        channel.connect()
-        try {
-            Thread.sleep(1000)
-        } catch (ee: java.lang.Exception) {
-        }
-        Log.e("XXX-----", String(baos.toByteArray()))
-        channel.disconnect()
-
-    }
     fun observeViewModel() {
         dataViewModel.response_error .observe(this, androidx.lifecycle.Observer {
             it?.let {
@@ -139,9 +100,11 @@ class MainActivity : AppCompatActivity() {
 
         inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             var btnCommand: Button
+            var txtOutPut: TextView
 
             init {
                 btnCommand = view.findViewById(R.id.btnCommand) as Button
+                txtOutPut = view.findViewById(R.id.txtOutPut) as TextView
 
             }
         }
@@ -156,10 +119,58 @@ class MainActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val requestMoneyModel = requestCustomersList[position]
             holder.btnCommand.setText(requestMoneyModel.name)
+            holder.btnCommand.setOnClickListener {
+
+                object : AsyncTask<Int?, Void?, Void?>() {
+
+                    override fun doInBackground(vararg params: Int?): Void? {
+                        try {
+                            holder.txtOutPut.text=   executeSSHcommand(requestMoneyModel.command ,requestMoneyModel.username,requestMoneyModel.password,requestMoneyModel.host,requestMoneyModel.port)
+
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                        }
+                        return null
+                    }
+                }.execute(1)
+
+            }
         }
 
         override fun getItemCount(): Int {
             return requestCustomersList.size
+        }
+        fun executeSSHcommand(command: String?,username: String?, password: String?, host: String?, port: String?): String {
+
+            val jsch = JSch()
+            val session = port?.let { jsch.getSession(username, host, it.toInt()) }
+            if (session != null) {
+                session.setPassword(password)
+            }
+
+            val prop = Properties()
+            prop["StrictHostKeyChecking"] = "no"
+            if (session != null) {
+                session.setConfig(prop)
+            }
+
+            if (session != null) {
+                session.connect()
+            }
+
+            val channel = session?.openChannel("exec") as ChannelExec
+            val baos = ByteArrayOutputStream()
+            channel.outputStream = baos
+            channel.setCommand(command)
+            channel.connect()
+            try {
+                Thread.sleep(1000)
+            } catch (ee: java.lang.Exception) {
+            }
+            Log.e("XXX-----", String(baos.toByteArray()))
+
+            channel.disconnect()
+            return String(baos.toByteArray())
         }
     }
 }
