@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
                 try {
                     if (itemSelected != null) {
                         if(executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port).length>20){
-                            txtOutPut.text="Text To Long To Read"
+                            txtOutPut.text="Text Too Long To Read"
                         }else{
                             txtOutPut.text= executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
 
