@@ -97,12 +97,19 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
     }
 
     override fun onItemSelected(position: Int?, itemSelected: DataModelResponse?) {
+
         object : AsyncTask<Int?, Void?, Void?>() {
 
             override fun doInBackground(vararg params: Int?): Void? {
                 try {
                     if (itemSelected != null) {
-                        txtOutPut.text=   executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
+                        if(executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port).length>20){
+                            txtOutPut.text="Text To Long To Read"
+                        }else{
+                            txtOutPut.text= executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
+
+                        }
+
                     }
 
                 } catch (e: java.lang.Exception) {
