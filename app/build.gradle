@@ -63,4 +63,5 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rxJavaVersion"
 
+    implementation 'com.github.f0ris.sweetalert:library:1.5.6'
 }
