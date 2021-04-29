@@ -1,6 +1,7 @@
 package com.example.oceanizeapplication
 
 import MyUtil
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,12 +17,19 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.oceanizeapplication.model.DataModelResponse
 import com.example.oceanizeapplication.view_model.DataViewModel
+import com.jcraft.jsch.*
+import java.io.ByteArrayOutputStream
+import java.io.DataInputStream
+import java.io.DataOutputStream
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var dataViewModel: DataViewModel
     private var recyclerView: RecyclerView? = null
     private var mAdapter: RequestAdapter? = null
     private lateinit var pDialog: SweetAlertDialog
+    private lateinit var btnNext: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +45,49 @@ class MainActivity : AppCompatActivity() {
         val mLayoutManager = LinearLayoutManager(applicationContext)
         recyclerView!!.setLayoutManager(mLayoutManager)
         recyclerView!!.setItemAnimator(DefaultItemAnimator())
+        btnNext=findViewById(R.id.btnNext)
+        btnNext.setOnClickListener {
+            object : AsyncTask<Int?, Void?, Void?>() {
+
+                override fun doInBackground(vararg params: Int?): Void? {
+                    try {
+                       executeSSHcommand()
+
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                    return null
+                }
+            }.execute(1)
+
+        }
+
+
+    }
+
+    fun executeSSHcommand() {
+
+        val jsch = JSch()
+        val session = jsch.getSession("android", "174.138.23.141", 2024)
+        session.setPassword("android123")
+
+        val prop = Properties()
+        prop["StrictHostKeyChecking"] = "no"
+        session.setConfig(prop)
+
+        session.connect()
+
+        val channel = session.openChannel("exec") as ChannelExec
+        val baos = ByteArrayOutputStream()
+        channel.outputStream = baos
+        channel.setCommand("perl -v")
+        channel.connect()
+        try {
+            Thread.sleep(1000)
+        } catch (ee: java.lang.Exception) {
+        }
+        Log.e("XXX-----", String(baos.toByteArray()))
+        channel.disconnect()
 
     }
     fun observeViewModel() {
@@ -56,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             it?.let {
                 pDialog.dismiss()
                 for (i in 0 until it.size) {
-                    Log.e("ButtonList",it.get(i).name.toString())
+                    // Log.e("ButtonList", it.get(i).name.toString())
                 }
                 Toast.makeText(getApplication(), "Fetch From Database ", Toast.LENGTH_SHORT).show()
                 mAdapter = RequestAdapter(it)
