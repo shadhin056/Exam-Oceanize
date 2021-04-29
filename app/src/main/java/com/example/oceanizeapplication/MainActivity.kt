@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -117,15 +118,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-            val requestMoneyModel = requestCustomersList[position]
-            holder.btnCommand.setText(requestMoneyModel.name)
+            val requestMyModel = requestCustomersList[position]
+
+
+            if(requestMyModel.status == 1){
+                holder.btnCommand.setText(requestMyModel.name)
+            }
             holder.btnCommand.setOnClickListener {
 
                 object : AsyncTask<Int?, Void?, Void?>() {
 
                     override fun doInBackground(vararg params: Int?): Void? {
                         try {
-                            holder.txtOutPut.text=   executeSSHcommand(requestMoneyModel.command ,requestMoneyModel.username,requestMoneyModel.password,requestMoneyModel.host,requestMoneyModel.port)
+                            holder.txtOutPut.text=   executeSSHcommand(requestMyModel.command ,requestMyModel.username,requestMyModel.password,requestMyModel.host,requestMyModel.port)
 
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
