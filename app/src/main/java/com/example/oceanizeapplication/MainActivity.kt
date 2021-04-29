@@ -114,34 +114,45 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
     }
     fun executeSSHcommand(command: String?,username: String?, password: String?, host: String?, port: String?): String {
 
-        val jsch = JSch()
-        val session = port?.let { jsch.getSession(username, host, it.toInt()) }
-        if (session != null) {
-            session.setPassword(password)
-        }
 
-        val prop = Properties()
-        prop["StrictHostKeyChecking"] = "no"
-        if (session != null) {
-            session.setConfig(prop)
-        }
-
-        if (session != null) {
-            session.connect()
-        }
-
-        val channel = session?.openChannel("exec") as ChannelExec
-        val baos = ByteArrayOutputStream()
-        channel.outputStream = baos
-        channel.setCommand(command)
-        channel.connect()
         try {
-            Thread.sleep(1000)
-        } catch (ee: java.lang.Exception) {
-        }
-        Log.e("XXX-----", String(baos.toByteArray()))
+            val jsch = JSch()
+            val session = port?.let { jsch.getSession(username, host, it.toInt()) }
+            if (session != null) {
+                session.setPassword(password)
+            }
 
-        channel.disconnect()
-        return String(baos.toByteArray())
+            val prop = Properties()
+            prop["StrictHostKeyChecking"] = "no"
+            if (session != null) {
+                session.setConfig(prop)
+            }
+
+            if (session != null) {
+                session.connect()
+            }
+
+            val channel = session?.openChannel("exec") as ChannelExec
+
+            val baos = ByteArrayOutputStream()
+            channel.outputStream = baos
+            channel.setCommand(command)
+            channel.connect()
+            try {
+                Thread.sleep(1000)
+            } catch (ee: java.lang.Exception) {
+            }
+
+            Log.e("XXX-----", String(baos.toByteArray()))
+
+            channel.disconnect()
+            return String(baos.toByteArray())
+
+
+        } catch (e: Exception) {
+            return  "Error"
+        } finally {
+
+        }
     }
 }
