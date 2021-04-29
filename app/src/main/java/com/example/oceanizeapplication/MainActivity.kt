@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
+import com.example.oceanizeapplication.adapter.RequestAdapter
 import com.example.oceanizeapplication.model.DataModelResponse
 import com.example.oceanizeapplication.view_model.DataViewModel
 import com.jcraft.jsch.*
@@ -24,12 +25,13 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
     private lateinit var dataViewModel: DataViewModel
     private var recyclerView: RecyclerView? = null
     private var mAdapter: RequestAdapter? = null
     private lateinit var pDialog: SweetAlertDialog
     private lateinit var btnNext: Button
+    private lateinit var txtOutPut: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         pDialog.titleText = "Loading"
         pDialog.setCancelable(false)
         recyclerView = findViewById(R.id.rv_users) as RecyclerView
+        txtOutPut = findViewById(R.id.txtOutPut) as TextView
         dataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
         observeViewModel()
         getResponse()
@@ -72,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                     // Log.e("ButtonList", it.get(i).name.toString())
                 }
                 Toast.makeText(getApplication(), "Fetch From Database ", Toast.LENGTH_SHORT).show()
-                mAdapter = RequestAdapter(it)
+                mAdapter = RequestAdapter(it,this)
                 recyclerView!!.setAdapter(mAdapter)
                 mAdapter?.notifyDataSetChanged();
 
@@ -92,90 +95,53 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    inner class RequestAdapter(private val requestCustomersList: List<DataModelResponse>) :
-        RecyclerView.Adapter<RequestAdapter.MyViewHolder>(), View.OnClickListener {
 
-        override fun onClick(v: View) {
+    override fun onItemSelected(position: Int?, itemSelected: DataModelResponse?) {
+        object : AsyncTask<Int?, Void?, Void?>() {
 
-        }
-
-        inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            var btnCommand: Button
-            var txtOutPut: TextView
-
-            init {
-                btnCommand = view.findViewById(R.id.btnCommand) as Button
-                txtOutPut = view.findViewById(R.id.txtOutPut) as TextView
-
-            }
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-            val itemView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.row_layout, parent, false)
-
-            return MyViewHolder(itemView)
-        }
-
-        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-            val requestMyModel = requestCustomersList[position]
-
-
-            if(requestMyModel.status == 1){
-                holder.btnCommand.setText(requestMyModel.name)
-            }
-            holder.btnCommand.setOnClickListener {
-
-                object : AsyncTask<Int?, Void?, Void?>() {
-
-                    override fun doInBackground(vararg params: Int?): Void? {
-                        try {
-                            holder.txtOutPut.text=   executeSSHcommand(requestMyModel.command ,requestMyModel.username,requestMyModel.password,requestMyModel.host,requestMyModel.port)
-
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
-                        }
-                        return null
+            override fun doInBackground(vararg params: Int?): Void? {
+                try {
+                    if (itemSelected != null) {
+                        txtOutPut.text=   executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
                     }
-                }.execute(1)
 
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+                return null
             }
+        }.execute(1)
+    }
+    fun executeSSHcommand(command: String?,username: String?, password: String?, host: String?, port: String?): String {
+
+        val jsch = JSch()
+        val session = port?.let { jsch.getSession(username, host, it.toInt()) }
+        if (session != null) {
+            session.setPassword(password)
         }
 
-        override fun getItemCount(): Int {
-            return requestCustomersList.size
+        val prop = Properties()
+        prop["StrictHostKeyChecking"] = "no"
+        if (session != null) {
+            session.setConfig(prop)
         }
-        fun executeSSHcommand(command: String?,username: String?, password: String?, host: String?, port: String?): String {
 
-            val jsch = JSch()
-            val session = port?.let { jsch.getSession(username, host, it.toInt()) }
-            if (session != null) {
-                session.setPassword(password)
-            }
-
-            val prop = Properties()
-            prop["StrictHostKeyChecking"] = "no"
-            if (session != null) {
-                session.setConfig(prop)
-            }
-
-            if (session != null) {
-                session.connect()
-            }
-
-            val channel = session?.openChannel("exec") as ChannelExec
-            val baos = ByteArrayOutputStream()
-            channel.outputStream = baos
-            channel.setCommand(command)
-            channel.connect()
-            try {
-                Thread.sleep(1000)
-            } catch (ee: java.lang.Exception) {
-            }
-            Log.e("XXX-----", String(baos.toByteArray()))
-
-            channel.disconnect()
-            return String(baos.toByteArray())
+        if (session != null) {
+            session.connect()
         }
+
+        val channel = session?.openChannel("exec") as ChannelExec
+        val baos = ByteArrayOutputStream()
+        channel.outputStream = baos
+        channel.setCommand(command)
+        channel.connect()
+        try {
+            Thread.sleep(1000)
+        } catch (ee: java.lang.Exception) {
+        }
+        Log.e("XXX-----", String(baos.toByteArray()))
+
+        channel.disconnect()
+        return String(baos.toByteArray())
     }
 }
