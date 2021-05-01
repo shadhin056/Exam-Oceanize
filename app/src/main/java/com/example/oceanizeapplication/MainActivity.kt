@@ -110,7 +110,9 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
     }
 
     override fun onItemSelected(position: Int?, itemSelected: DataModelResponse?) {
-
+        if (itemSelected != null) {
+            txtOutPut.text="Your Command : "+itemSelected.command
+        }
         object : AsyncTask<Int?, Void?, Void?>() {
 
             override fun doInBackground(vararg params: Int?): Void? {
@@ -119,7 +121,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
                         if(executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port).length>150){
                             txtOutPut.text="Text Too Long To Read"
                         }else{
-                            txtOutPut.text= executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
+                            txtOutPut.text="Your Output: "+ executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
                         }
 
                     }
