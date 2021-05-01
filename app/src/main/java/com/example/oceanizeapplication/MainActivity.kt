@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
                     // Log.e("ButtonList", it.get(i).name.toString())
                 }
                 Toast.makeText(getApplication(), "Fetch From Database ", Toast.LENGTH_SHORT).show()
-                mAdapter = RequestAdapter(it,this)
+                mAdapter = RequestAdapter(this,it,this)
                 recyclerView!!.setAdapter(mAdapter)
                 mAdapter?.notifyDataSetChanged();
 
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
             override fun doInBackground(vararg params: Int?): Void? {
                 try {
                     if (itemSelected != null) {
-                        if(executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port).length>20){
+                        if(executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port).length>50){
                             txtOutPut.text="Text Too Long To Read"
                         }else{
                             txtOutPut.text= executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
             channel.setCommand(command)
             channel.connect()
             try {
-                Thread.sleep(1000)
+                Thread.sleep(500)
             } catch (ee: java.lang.Exception) {
             }
 

@@ -1,22 +1,20 @@
 package com.example.oceanizeapplication.adapter
 
-import android.os.AsyncTask
-import android.util.Log
+import android.app.Activity
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oceanizeapplication.R
 import com.example.oceanizeapplication.model.DataModelResponse
-import com.jcraft.jsch.ChannelExec
-import com.jcraft.jsch.JSch
-import java.io.ByteArrayOutputStream
 import java.util.*
 
-class RequestAdapter(private val requestCustomersList: List<DataModelResponse>,private val listener: adapterListener) : RecyclerView.Adapter<RequestAdapter.MyViewHolder>(), View.OnClickListener {
 
+class RequestAdapter(activity: Activity, private val requestCustomersList: List<DataModelResponse>, private val listener: adapterListener) : RecyclerView.Adapter<RequestAdapter.MyViewHolder>(), View.OnClickListener {
+    lateinit var context:Context
     override fun onClick(v: View) {
 
     }
@@ -26,7 +24,7 @@ class RequestAdapter(private val requestCustomersList: List<DataModelResponse>,p
 
         init {
             btnCommand = view.findViewById(R.id.btnCommand) as Button
-
+            context = view.getContext()
         }
     }
 
@@ -44,7 +42,8 @@ class RequestAdapter(private val requestCustomersList: List<DataModelResponse>,p
             holder.btnCommand.setText(requestMyModel.name)
         }
         holder.btnCommand.setOnClickListener {
-            listener.onItemSelected(position,requestCustomersList[position])
+            Toast.makeText(context, "Request For command ", Toast.LENGTH_SHORT).show()
+            listener.onItemSelected(position, requestCustomersList[position])
         }
     }
 
@@ -55,7 +54,7 @@ class RequestAdapter(private val requestCustomersList: List<DataModelResponse>,p
 
 
     interface adapterListener {
-        fun onItemSelected(position: Int?,itemSelected: DataModelResponse?)
+        fun onItemSelected(position: Int?, itemSelected: DataModelResponse?)
     }
 
 }
