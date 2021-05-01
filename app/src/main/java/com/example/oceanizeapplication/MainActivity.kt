@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
     private lateinit var pDialog: SweetAlertDialog
     private lateinit var btnNext: Button
     private lateinit var txtOutPut: TextView
-
+    var filterList: ArrayList<DataModelResponse> = ArrayList<DataModelResponse>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -84,11 +84,23 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
 
             it?.let {
                 pDialog.dismiss()
+                //json status 1 will only show ,o will hide
                 for (i in 0 until it.size) {
-                    // Log.e("ButtonList", it.get(i).name.toString())
+                    if(it.get(i).status==1)
+                    filterList.add(DataModelResponse(it.get(i).id,
+                            it.get(i).name,
+                            it.get(i).host,
+                            it.get(i).port,
+                            it.get(i).username,
+                            it.get(i).password,
+                            it.get(i).command,
+                            it.get(i).createdAt,
+                            it.get(i).updatedAt,
+                            it.get(i).status
+                    ) )
                 }
                 Toast.makeText(getApplication(), "Fetch From API ", Toast.LENGTH_SHORT).show()
-                mAdapter = RequestAdapter(this,it,this)
+                mAdapter = RequestAdapter(this,filterList,this)
                 recyclerView!!.setAdapter(mAdapter)
                 mAdapter?.notifyDataSetChanged();
 

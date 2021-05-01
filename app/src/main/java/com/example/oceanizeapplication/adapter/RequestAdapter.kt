@@ -35,10 +35,7 @@ class RequestAdapter(activity: Activity, private val requestList: List<DataModel
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val rowData = requestList[position]
 
-        //json status 1 will only show ,o will hide
-        if(rowData.status == 1){
-            holder.btnCommand.setText(rowData.name)
-        }
+        holder.btnCommand.setText(rowData.name)
         holder.btnCommand.setOnClickListener {
             Toast.makeText(context, "Request For command Please Wait ", Toast.LENGTH_SHORT).show()
             listener.onItemSelected(position, requestList[position])
