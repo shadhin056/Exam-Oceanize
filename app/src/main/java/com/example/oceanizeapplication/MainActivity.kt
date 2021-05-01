@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
                         if(executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port).length>150){
                             txtOutPut.text="Text Too Long To Read"
                         }else{
-                            txtOutPut.text="Your Output: "+ executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
+                            txtOutPut.text=executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
                         }
 
                     }
