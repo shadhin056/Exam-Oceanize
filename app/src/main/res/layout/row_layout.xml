@@ -4,8 +4,14 @@
               android:layout_height="wrap_content"
               android:orientation="vertical"
               android:layout_marginTop="5dp"
+    android:clickable="true"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
              >
     <Button
+        android:clickable="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:id="@+id/btnCommand"
         android:text="Button"
         android:textColor="@color/white"

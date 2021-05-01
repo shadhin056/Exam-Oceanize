@@ -37,25 +37,37 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //Dialog for Better wait
         pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
         pDialog.titleText = "Loading"
         pDialog.setCancelable(false)
+
+
         recyclerView = findViewById(R.id.rv_users) as RecyclerView
+
+        //Output from command will show here
         txtOutPut = findViewById(R.id.txtOutPut) as TextView
+
+        //button is hidden
+        btnNext=findViewById(R.id.btnNext)
+
         dataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
+
+        //Observe Live Data
         observeViewModel()
+
+        //get List Of Data from API
         getResponse()
+
+        //FOR Recyclerview
         val mLayoutManager = LinearLayoutManager(applicationContext)
         recyclerView!!.setLayoutManager(mLayoutManager)
         recyclerView!!.setItemAnimator(DefaultItemAnimator())
-        btnNext=findViewById(R.id.btnNext)
-
-
-
     }
 
 
     fun observeViewModel() {
+        //ANY TYPE OF Error From Network call
         dataViewModel.response_error .observe(this, androidx.lifecycle.Observer {
             it?.let {
                 pDialog.dismiss()
@@ -67,6 +79,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
             }
         })
 
+        //list of response from API
         dataViewModel.listResponse .observe(this, androidx.lifecycle.Observer {
 
             it?.let {
@@ -74,7 +87,7 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
                 for (i in 0 until it.size) {
                     // Log.e("ButtonList", it.get(i).name.toString())
                 }
-                Toast.makeText(getApplication(), "Fetch From Database ", Toast.LENGTH_SHORT).show()
+                Toast.makeText(getApplication(), "Fetch From API ", Toast.LENGTH_SHORT).show()
                 mAdapter = RequestAdapter(this,it,this)
                 recyclerView!!.setAdapter(mAdapter)
                 mAdapter?.notifyDataSetChanged();
@@ -103,11 +116,10 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
             override fun doInBackground(vararg params: Int?): Void? {
                 try {
                     if (itemSelected != null) {
-                        if(executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port).length>50){
+                        if(executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port).length>150){
                             txtOutPut.text="Text Too Long To Read"
                         }else{
                             txtOutPut.text= executeSSHcommand(itemSelected.command ,itemSelected.username,itemSelected.password,itemSelected.host,itemSelected.port)
-
                         }
 
                     }
@@ -128,7 +140,6 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
             if (session != null) {
                 session.setPassword(password)
             }
-
             val prop = Properties()
             prop["StrictHostKeyChecking"] = "no"
             if (session != null) {
@@ -141,17 +152,16 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
 
             val channel = session?.openChannel("exec") as ChannelExec
 
+            //For SSH OUTPUT
             val baos = ByteArrayOutputStream()
             channel.outputStream = baos
             channel.setCommand(command)
             channel.connect()
+
             try {
                 Thread.sleep(500)
             } catch (ee: java.lang.Exception) {
             }
-
-            Log.e("XXX-----", String(baos.toByteArray()))
-
             channel.disconnect()
             return String(baos.toByteArray())
 
@@ -159,7 +169,6 @@ class MainActivity : AppCompatActivity() ,RequestAdapter.adapterListener{
         } catch (e: Exception) {
             return  "Error"
         } finally {
-
         }
     }
 }

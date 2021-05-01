@@ -34,8 +34,6 @@ class ApiService {
         .build()
         .create(Api::class.java);
 
-
-
     fun responseList(): Single<List<DataModelResponse>> {
         return api.responseList(
         )

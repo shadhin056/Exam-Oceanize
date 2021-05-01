@@ -14,7 +14,9 @@ class DataViewModel :ViewModel(){
     private val apiService = ApiService()
     private val disposable = CompositeDisposable()
 
+    //Get List OF DATA FROM API
     var listResponse = MutableLiveData<List<DataModelResponse>>();
+    //ANY ERROR WIll Show Here
     var response_error = MutableLiveData<Boolean>();
 
     fun responseList(){

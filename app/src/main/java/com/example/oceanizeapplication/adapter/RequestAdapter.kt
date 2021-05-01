@@ -10,14 +10,11 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oceanizeapplication.R
 import com.example.oceanizeapplication.model.DataModelResponse
-import java.util.*
 
 
-class RequestAdapter(activity: Activity, private val requestCustomersList: List<DataModelResponse>, private val listener: adapterListener) : RecyclerView.Adapter<RequestAdapter.MyViewHolder>(), View.OnClickListener {
+class RequestAdapter(activity: Activity, private val requestList: List<DataModelResponse>, private val listener: adapterListener) : RecyclerView.Adapter<RequestAdapter.MyViewHolder>()  {
     lateinit var context:Context
-    override fun onClick(v: View) {
 
-    }
 
     inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var btnCommand: Button
@@ -36,19 +33,20 @@ class RequestAdapter(activity: Activity, private val requestCustomersList: List<
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val requestMyModel = requestCustomersList[position]
+        val rowData = requestList[position]
 
-        if(requestMyModel.status == 1){
-            holder.btnCommand.setText(requestMyModel.name)
+        //json status 1 will only show ,o will hide
+        if(rowData.status == 1){
+            holder.btnCommand.setText(rowData.name)
         }
         holder.btnCommand.setOnClickListener {
-            Toast.makeText(context, "Request For command ", Toast.LENGTH_SHORT).show()
-            listener.onItemSelected(position, requestCustomersList[position])
+            Toast.makeText(context, "Request For command Please Wait ", Toast.LENGTH_SHORT).show()
+            listener.onItemSelected(position, requestList[position])
         }
     }
 
     override fun getItemCount(): Int {
-        return requestCustomersList.size
+        return requestList.size
     }
 
 
