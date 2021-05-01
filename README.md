@@ -29,5 +29,5 @@ hope so on next update i will fix this error.
 ## Software
 Used Android stdio current latest version
 ## Download 
-* Zip download Link https://mega.nz/file/sX51ASgJ#Wor_aZRWuUa-zH_VF3bAgiKhHsYtOy_d1FFrX2cFIB4
-* Apk download Link https://mega.nz/file/ge5nnaxL#smQBr152R2IFElAWF3rImwiqUd0bL-SdMa_tmGi5sig
+* Apk download Link https://mega.nz/file/sX51ASgJ#Wor_aZRWuUa-zH_VF3bAgiKhHsYtOy_d1FFrX2cFIB4
+* Zip download Link https://mega.nz/file/ge5nnaxL#smQBr152R2IFElAWF3rImwiqUd0bL-SdMa_tmGi5sig
